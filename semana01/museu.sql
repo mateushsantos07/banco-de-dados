@@ -94,3 +94,79 @@ INSERT INTO obra_arte_exposicao (obra_arte_id, exposicao_id) VALUES (1, 2);
 INSERT INTO obra_arte_exposicao (obra_arte_id, exposicao_id) VALUES (2, 2);
 INSERT INTO obra_arte_exposicao (obra_arte_id, exposicao_id) VALUES (2, 3);
 INSERT INTO obra_arte_exposicao (obra_arte_id, exposicao_id) VALUES (3, 1);
+
+---------------------------------------------------- S E M A N A 02 ----------------------------------------------------
+
+SELECT * FROM pg_tables WHERE schemaname = 'public'
+
+CREATE TABLE obraDeArte_Artista (
+	id SERIAL PRIMARY KEY,
+	artista_id INTEGER NOT NULL,
+	obra_de_arte_id INTEGER NOT NULL,
+	FOREIGN KEY (artista_id) REFERENCES artista(id)
+)
+
+SELECT * FROM obraDeArte_Artista
+
+ALTER TABLE obraDeArte_Artista
+ADD CONSTRAINT fk_obra_arte_id 
+FOREIGN KEY (obra_de_arte_id) REFERENCES obra_de_arte(id)
+
+SELECT * FROM obraDeArte_Artista
+SELECT * FROM obra_de_arte
+SELECT * FROM artista
+
+INSERT INTO artista (nome, data_nascimento, nascionalidade, biografia)
+VALUES('VAN GOGH', '1999-02-10', 'Brasileiro', 'Criador de "a noite estrelada". ' );
+
+UPDATE artista SET nome = 'VAN DOG' WHERE id = 2
+UPDATE artista SET biografia = 'Copiador de "a noite estrelada". ' WHERE id = 2
+
+INSERT INTO obraDeArte_Artista (artista_id, obra_de_arte_id) VALUES (1, 2),
+INSERT INTO obraDeArte_Artista (artista_id, obra_de_arte_id) VALUES (2, 3)
+INSERT INTO obraDeArte_Artista (artista_id, obra_de_arte_id) VALUES (2, 2)
+
+SELECT COUNT (*) as total_obras_arte FROM obra_de_arte /*PARA SELECIONAR E CONTAR TODOS OS ITENS DA TABELA obra_de_arte*/
+
+SELECT 
+	obra_de_arte.titulo,
+	obra_de_arte.anocriacao,
+	obraDeArte_Artista.artista_id
+FROM obra_de_arte
+JOIN obraDeArte_Artista ON obra_de_arte.id = obraDeArte_Artista.obra_de_arte_id
+
+JOIN artista ON obradearte_artista.artista_id = artista.id
+
+SELECT 
+	obra_de_arte.titulo,
+	obra_de_arte.anocriacao,
+	artista.nome,
+	artista.nascionalidade
+FROM obra_de_arte
+JOIN obraDeArte_Artista ON obra_de_arte.id = obraDeArte_Artista.obra_de_arte_id
+
+JOIN artista ON obradearte_artista.artista_id = artista.id
+
+SELECT 
+	o.titulo AS titulo_obra_de_arte,
+	o.anocriacao AS ano_de_criacao_obra_de_arte,
+	a.nome AS nome_artista,
+	a.nascionalidade AS nascionalidade_artista
+FROM obra_de_arte AS o
+JOIN obraDeArte_Artista AS oa ON o.id = oa.obra_de_arte_id
+
+JOIN artista AS a ON oa.artista_id = a.id
+
+SELECT 
+	a.nome AS nome_artista,
+	COUNT(o.id) 
+FROM obra_de_arte AS o
+JOIN obraDeArte_Artista AS oa ON o.id = oa.obra_de_arte_id
+JOIN artista AS a ON oa.artista_id = a.id
+GROUP BY a.nome
+
+SELECT 
+* 
+FROM obra_de_arte AS oa
+JOIN obra_arte_exposicao AS oae ON oa.id = oae.obra_arte_id
+JOIN exposicao AS e ON oae.exposicao_id = e.id
