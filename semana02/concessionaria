@@ -1,0 +1,82 @@
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
+CREATE TABLE veiculo (
+	id UUID DEFAULT gen_random_uuid() PRIMARY KEY, 
+	chassi VARCHAR NOT NULL,
+	modelo VARCHAR NOT NULL,
+	ano_fabricacao INTEGER NOT NULL,
+	cor VARCHAR NOT NULL,
+	quilometragem INTEGER NOT NULL,
+	preco_venda DECIMAL NOT NULL,
+	id_fabricante UUID NOT NULL,
+	FOREIGN KEY (id_fabricante) REFERENCES fabricante(id) ON DELETE CASCADE
+)
+
+CREATE TABLE vendedore(
+	id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+	nome VARCHAR UNIQUE NOT NULL, 
+	cpf VARCHAR UNIQUE NOT NULL,
+	telefone VARCHAR UNIQUE NOT NULL,
+	email VARCHAR UNIQUE NOT NULL,
+	data_contratacao DATE NOT NULL
+)
+
+CREATE TABLE fabricante (
+	id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+	pais_origem VARCHAR NOT NULL,
+	nome VARCHAR NOT NULL,
+	ano_fundacao INTEGER NOT NULL
+)
+
+CREATE TABLE cliente (
+	id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+	nome VARCHAR NOT NULL,
+	cpf VARCHAR UNIQUE NOT NULL,
+	telefone VARCHAR NOT NULL,
+	email VARCHAR UNIQUE NOT NULL,
+	endereco VARCHAR NOT NULL
+)
+
+CREATE TABLE manutencoes (
+	id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+	data_servico DATE NOT NULL,
+	descricao VARCHAR NOT NULL,
+	custo DECIMAL NOT NULL,
+	id_veiculo UUID NOT NULL,
+	FOREIGN KEY(id_veiculo) REFERENCES veiculo(id) ON DELETE CASCADE
+)
+
+CREATE TABLE vendas (
+	id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+	data_venda DATE NOT NULL,
+	valor_total DECIMAL NOT NULL,
+	metodo_pagamento VARCHAR NOT NULL,
+	id_vendedore UUID NOT NULL,
+	id_cliente UUID NOT NULL,
+	id_veiculo UUID NOT NULL,
+	FOREIGN KEY (id_vendedore) REFERENCES vendedore(id) ON DELETE CASCADE,
+	FOREIGN KEY (id_cliente) REFERENCES cliente(id) ON DELETE CASCADE,
+	FOREIGN KEY (id_veiculo) REFERENCES veiculo(id) ON DELETE CASCADE
+)
+
+INSERT INTO fabricante (pais_origem, nome, ano_fundacao) 
+VALUES 
+    ('BRASIL', 'MARCOPOLO', '2010'),
+    ('ALEMANHA', 'AUDI', '2012'),
+    ('SUÉCIA', 'KOENIGSEGG', '2014'),
+    ('JAPÃO', 'MAZDA', '2015'),
+    ('EUA', 'FORD', '2018');
+
+
+INSERT INTO veiculo (chassi, modelo, ano_fabricacao, cor, quilometragem, preco_venda, id_fabricante)
+VALUES
+    ('P1Q8W6R4ZX','URBANOS', 2010, 'BRANCO', '100000', '150000', '19490ba8-f2c1-40f9-acde-8e50aefa7ce6'),
+    ('M3B9T5H7VP','RS6', 2024, 'PRETO', '1175000', '5000000', '485c230b-e5cd-424f-a77c-bf3a80045548'),
+    ('G7D2F9K3LQ','GEMERA', 2022, 'VERDE', '10000', '20000000', 'c68ba270-0b6d-4068-8e04-4da70521a3bc'),
+    ('J6Y2N8Q1WF','RX7', 2016, 'VERMELHO', '0', '50000', '04e989aa-483e-4b64-8c1e-5b16cbd73a42'),
+    ('S4L7K3C8JD','MUSTANG', 2024, 'AZUL', '20000', '500000', 'aa1edbe8-bcc5-4e0a-9d11-51301afb6aab');
+	
+SELECT * FROM fabricante
+
+SELECT * FROM veiculo
+
