@@ -46,6 +46,8 @@ CREATE TABLE manutencoes (
 	FOREIGN KEY(id_veiculo) REFERENCES veiculo(id) ON DELETE CASCADE
 )
 
+CREATE TYPE metodo_pagamento AS ENUM ('PIX', 'CRÉDITO', 'DEBITO', 'DINHEIRO', 'FINANCIAMENTO') 
+
 CREATE TABLE vendas (
 	id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
 	data_venda DATE NOT NULL,
@@ -80,3 +82,73 @@ SELECT * FROM fabricante
 
 SELECT * FROM veiculo
 
+INSERT INTO manutencoes (id, pais_origem, nome, ano_fundacao) 
+VALUES 
+  ('485c230b-e5cd-424f-a77c-bf3a80045548''Alemanha', 'Volkswagen', 1937),
+  ('aa1edbe8-bcc5-4e0a-9d11-51301afb6aab''EUA', 'Ford', 1903),
+  ('19490ba8-f2c1-40f9-acde-8e50aefa7ce6''Itália', 'Fiat', 1899),
+  ('04e989aa-483e-4b64-8c1e-5b16cbd73a42''Japão', 'Toyota', 1937),
+  ('c68ba270-0b6d-4068-8e04-4da70521a3bc''França', 'Renault', 1899);
+
+
+INSERT INTO manutencoes (data_servico, descricao, custo, id_veiculo) 
+VALUES 
+  ('2024-09-15', 'Troca de óleo e filtros', 250.00, 'fe0fda6e-011d-4f80-9664-05ecb2a0716d'),
+  ('2024-10-01', 'Alinhamento e balanceamento de rodas', 180.00, '4f0baed7-106e-43e6-9b82-146b96babdb4'),
+  ('2024-08-20', 'Substituição de pastilhas de freio', 320.00, '4afef051-f3e5-4450-88ee-cca87154551a'),
+  ('2024-07-10', 'Reparo no sistema de ar condicionado', 500.00, '07f71d72-c447-4506-88f0-f09cb79f94fe'),
+  ('2024-10-05', 'Troca de bateria e cabeamento', 350.00, '8014e56b-a039-4511-b53e-7e5600708c0e');
+
+  INSERT INTO vendedore (nome, cpf, telefone, email, data_contratacao) 
+VALUES 
+  ('Carlos Alberto Silva', '123.456.789-01', '(11) 92345-6789', 'carlos.silva@exemplo.com', '2022-05-10'),
+  ('Ana Beatriz Costa', '234.567.890-12', '(21) 93456-7890', 'ana.costa@exemplo.com', '2023-02-15'),
+  ('José Henrique Oliveira', '345.678.901-23', '(31) 94567-8901', 'jose.oliveira@exemplo.com', '2021-08-20'),
+  ('Patrícia Rocha', '456.789.012-34', '(41) 95678-9012', 'patricia.rocha@exemplo.com', '2020-11-05'),
+  ('Lucas Pereira Gomes', '567.890.123-45', '(51) 96789-0123', 'lucas.gomes@exemplo.com', '2024-01-12');
+
+  INSERT INTO vendas (data_venda, valor_total, metodo_pagamento, id_vendedore, id_cliente, id_veiculo) 
+VALUES 
+  ('2024-09-10', 45000.00, 'PIX', '48cda45f-e2ff-4649-b022-46c3cc264683', '38dd88a6-1dd8-4015-bbf6-5d114fca4f8b', 'fe0fda6e-011d-4f80-9664-05ecb2a0716d'),
+  ('2024-09-15', 35000.00, 'PIX', '08845d89-9975-4289-9147-66f3eb5b5021', 'c0e4560c-a277-44d7-ad6c-a173ca0d05ce', '4f0baed7-106e-43e6-9b82-146b96babdb4'),
+  ('2024-09-20', 60000.00, 'FINANCIAMENTO', 'cf795eac-108d-47c5-9f26-336a342c8aa6', '73cc2ce5-599c-4521-b8fa-bb55c225d4ac', '4afef051-f3e5-4450-88ee-cca87154551a'),
+  ('2024-10-01', 28000.00, 'DEBITO', '04602255-5dbe-4412-8744-42f32f3289dd', '22340cf1-cc79-4539-899d-4202fdf75ac5', '8014e56b-a039-4511-b53e-7e5600708c0e'),
+  ('2024-10-05', 52000.00, 'CRÉDITO', 'b11c9b57-3648-4583-b29a-253ec124efe1', 'b12b909b-bb50-42ec-ab67-aa6657b43e7a', '07f71d72-c447-4506-88f0-f09cb79f94fe');
+ 
+
+ //PARA BUSCAR POR EXEMPLO O VALOR MÁXIMO DO PREÇO DE VENDA DE UM VEÍCULO
+ SELECT MAX(preco_venda) FROM veiculo
+
+SELECT MAX(preco_venda), MIN(preco_venda) FROM veiculo
+
+//O AS SERVE PARA DAR "NOMES" AS COLUNAS, COMO UM APELIDO.
+SELECT MAX(preco_venda) AS MAIOR_PRECO, MIN(preco_venda) AS MENOR_PRECO FROM veiculo
+
+//AVG É AVERAGE, A MÉDIA.
+SELECT AVG(preco_venda) FROM veiculo
+SELECT AVG(quilometragem) FROM veiculo
+
+//ROUND SERVE PARA ARREDONDAR OS VALORES, ALI POR EXEMPLO ELE ARREDONDOU E COLOCOU DUAS CASAS APÓS A VÍRGULA.
+SELECT ROUND(AVG(quilometragem), 2) FROM veiculo
+
+
+//SUM SERVE PARA SOMAR.
+SELECT SUM(preco_venda) FROM veiculo
+SELECT ROUND(SUM(preco_venda), 2) FROM veiculo
+SELECT SUM(preco_venda) FROM veiculo WHERE ano_fabricacao = '2024'
+SELECT SUM(preco_venda) FROM veiculo WHERE ano_fabricacao > '2010'
+
+SELECT SUM(valor_total) FROM vendas WHERE data_venda BETWEEN '2024-10-01' AND '2024-11-07'
+
+//SELECIONA OS VALORES E ORDENA POR DECRESENTA
+SELECT * FROM vendas ORDER BY valor_total DESC
+
+//AGRUPA ELEMENTOS 
+SELECT metodo_pagamento, COUNT(id) FROM vendas GROUP BY metodo_pagamento
+
+SELECT metodo_pagamento, COUNT(id) AS qtd FROM vendas GROUP BY metodo_pagamento ORDER BY qtd DESC
+
+//LIKE SERVE PARA BUSCAR ALGUMAS COISAS EM UM VARCHAR
+SELECT * FROM cliente WHERE nome LIKE 'João%'
+SELECT * FROM cliente WHERE nome LIKE '%S%'
+SELECT * FROM cliente
